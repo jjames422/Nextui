@@ -1,4 +1,4 @@
-// app/api/user/buy-asset/route.ts
+// /app/api/user/buy-asset/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
@@ -8,7 +8,7 @@ import { generateBTCAddress, generateAddress } from '@/lib/walletUtils';
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || !session.user || !('id' in session.user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -62,6 +62,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error('Error buying asset:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
   }
 }

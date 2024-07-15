@@ -1,7 +1,8 @@
+// /app/api/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { NETWORKS } from '@/lib/networkConfig';
+import { generateBTCAddress, generateAddress } from '@/lib/walletUtils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,12 +28,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create wallets for the user
+    // Create wallets for the user with unique addresses
+    const fiatAddress = `fiat-${newUser.id}-${Date.now()}`; // Unique placeholder for FIAT
+
     await prisma.wallet.create({
       data: {
         userId: newUser.id,
         type: 'FIAT',
         balance: 0.0,
+        address: fiatAddress,
       },
     });
 
@@ -76,20 +80,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     console.error('Error during registration:', error);
-    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    }
   }
 }
-
-function generateBTCAddress(): string {
-  const bitcoin = require('bitcoinjs-lib');
-  const keyPair = bitcoin.ECPair.makeRandom();
-  const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
-  return address!;
-}
-
-function generateAddress(network: string): string {
-  const { ethers } = require('ethers');
-  const provider = new ethers.providers.JsonRpcProvider(NETWORKS[network]);
-  const wallet = ethers.Wallet.createRandom().connect(provider);
-  return wallet.address;
-}	

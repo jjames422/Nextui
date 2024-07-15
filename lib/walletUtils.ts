@@ -1,6 +1,10 @@
+// /lib/walletUtils.ts
 import * as bitcoin from 'bitcoinjs-lib';
+import * as ecc from 'tiny-secp256k1';
 import { ethers } from 'ethers';
 import { NETWORKS } from './networkConfig';
+
+bitcoin.initEccLib(ecc);
 
 // Generate a Bitcoin address
 export function generateBTCAddress(): string {
