@@ -1,0 +1,16 @@
+// lib/walletUtils.ts
+import * as bitcoin from 'bitcoinjs-lib';
+import { ethers } from 'ethers';
+
+// Generate a Bitcoin address
+export function generateBTCAddress(): string {
+  const keyPair = bitcoin.ECPair.makeRandom();
+  const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
+  return address!;
+}
+
+// Generate an Ethereum-compatible address (ETH, BNB, Polygon)
+export function generateETHAddress(): string {
+  const wallet = ethers.Wallet.createRandom();
+  return wallet.address;
+}

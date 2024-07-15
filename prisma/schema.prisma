@@ -37,10 +37,12 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  password      String
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  wallets       Wallet[]
 }
 
 model VerificationToken {
@@ -49,4 +51,25 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Wallet {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  type      WalletType
+  balance   Float      @default(0.0)
+  address   String     @unique
+}
+
+enum WalletType {
+  BTC
+  ETH
+  USDT
+  SHIB
+  LTC
+  USDC
+  FIAT
+  BNB
+  POLYGON
 }

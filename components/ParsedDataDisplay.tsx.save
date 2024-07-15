@@ -1,0 +1,76 @@
+[200~'use client'; import { useState, 
+useEffect } from 'react'; import { 
+Button } from '@nextui-org/button'; 
+import { Card } from 
+'@nextui-org/card'; import { Progress 
+} from '@nextui-org/progress';
+import { RadioGroup, Radio } from 
+'@nextui-org/radio'; export default 
+function ParsedDataDisplay() {
+  const [fileName, setFileName] = 
+  useState(''); const [parsedData, 
+  setParsedData] = 
+  useState<Record<string, string> | 
+  null>(null); const [loading, 
+  setLoading] = useState(false); const 
+  [buttonClicked, setButtonClicked] = 
+  useState(false); const [files, 
+  setFiles] = useState<string[]>([]); 
+  useEffect(() => {
+    const fetchFiles = async () => { 
+      const response = await 
+      fetch('/api/parse_file', {
+        method: 'GET',
+      });
+      const result = await 
+      response.json(); 
+      setFiles(result);
+    };
+    fetchFiles();
+  }, []);
+  const fetchData = async () => { if 
+    (!fileName) return; 
+    setLoading(true); 
+    setButtonClicked(true); const 
+    response = await 
+    fetch(`/api/parse_file?fileName=${fileName}`, 
+    {
+      method: 'POST',
+    });
+    const result = await 
+    response.json(); 
+    setParsedData(result); 
+    setLoading(false);
+  };
+  return ( <Card> <h1>Parse and 
+      Display File</h1> <RadioGroup
+        label="Select a file" 
+        onChange={(value) => 
+        setFileName(value)} 
+        value={fileName}
+      >
+        {files.map((file, index) => ( 
+          <Radio key={index} 
+          value={file}>
+            {file} </Radio> ))} 
+      </RadioGroup> <Button
+        onClick={fetchData} 
+        color={buttonClicked ? 
+        'secondary' : 'primary'} 
+        disabled={loading} 
+        className="mt-4"
+      >
+        {loading ? 'Parsing...' : 
+        'Parse File'}
+      </Button> {loading && ( 
+        <Progress
+          color="error" indeterminate 
+          className="mt-4"
+        /> )} {parsedData && ( <div 
+        className="mt-4">
+          <h2>Parsed Data</h2> 
+          <pre>{JSON.stringify(parsedData, 
+          null, 2)}</pre>
+        </div> )} </Card> );
+}
+

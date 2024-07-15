@@ -1,14 +1,14 @@
+
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
 import clsx from "clsx";
-
-import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-import { SessionProvider } from './sessionProvider';
+import dynamic from "next/dynamic";
+
+const ClientProviders = dynamic(() => import("./clientProviders"), { ssr: false });
 
 export const metadata: Metadata = {
   title: {
@@ -28,11 +28,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <head />
@@ -42,18 +38,16 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <SessionProvider>
-          <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-            <div className="relative flex flex-col h-screen">
-              <Navbar />
-              <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
-                {children}
-              </main>
-              <footer className="w-full flex items-center justify-center py-3">
-              </footer>
-            </div>
-          </Providers>
-        </SessionProvider>
+        <ClientProviders>
+          <div className="relative flex flex-col h-screen">
+            <Navbar />
+            <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+              {children}
+            </main>
+            <footer className="w-full flex items-center justify-center py-3">
+            </footer>
+          </div>
+        </ClientProviders>
       </body>
     </html>
   );

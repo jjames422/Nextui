@@ -1,8 +1,9 @@
+// config/site.ts
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + NextUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "NxChange",
+  description: "Make beautiful crypo reardless of your experience.",
   navItems: [
     {
       label: "Home",
@@ -55,12 +56,21 @@ export const siteConfig = {
       href: "/help-feedback",
     },
     {
-      label: "Logout",
+      label: "Upload",
+      href: "/dashboard/upload",
+    },
+    {
+      label: "Logout", 
       href: "/logout",
+      color: "danger",
     },
   ],
   links: {
-      login: "/login",
-      register: "/register",
+    login: "/login",
+    register: "/register",
+    twitter: "https://twitter.com/yourlink",
+    github: "https://github.com/yourlink",
+    discord: "https://discord.com/yourlink",
+    sponsor: "https://github.com/sponsors/yourlink",
   },
 };
